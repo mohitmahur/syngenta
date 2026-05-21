@@ -12,7 +12,7 @@ Traditional marketing—mass media, generic campaigns, and one-size-fits-all con
 3. **Accessibility:** Content must be vernacular, highly visual, and contextually relevant to resonate with farmers who have limited time, lower literacy rates, and disparate device access (smartphone vs. feature phone).
 4. **Attribution:** It is incredibly difficult to map a WhatsApp message to an offline retail point-of-sale (POS) conversion.
 
-##  The Solution
+## The Solution
 
 **KrishiConnect AI** is a production-grade, end-to-end intelligent orchestration engine. It ingests raw field telemetry (Grower profiles, POS data, Rep visits, and Digital logs), fuses it with **real-time weather APIs**, and dynamically sequences hyper-personalized marketing content across WhatsApp, SMS, and Voice Calls.
 
@@ -41,7 +41,7 @@ Powered by **Google Gemini Flash**, the content engine produces highly vernacula
 *   **Visual Concepts:** High-fidelity prompts ready to be fed into DALL-E or Stable Diffusion.
 *   **Video Storyboards:** 30-second, 5-scene narrative scripts with visual cues and translated voice-over narrations designed for short-form video formats.
 
-### 5.Strict Compliance Guardrails
+### 5. Strict Compliance Guardrails
 AI hallucinations in Ag-Chem are dangerous. KrishiConnect runs generated payloads through rigorous RegEx guardrails that:
 *   Verify the recommended chemical product is explicitly mentioned.
 *   **Block forbidden claims** (e.g., blocking phrases like "100% guarantee", "triple your yield", or false "organic" claims for synthetic chemicals).
@@ -49,12 +49,12 @@ AI hallucinations in Ag-Chem are dangerous. KrishiConnect runs generated payload
 ### 6. 14-Day Attribution Window
 Moving away from naive lifetime joins, the analytics engine measures true Campaign-to-Action conversion. A POS transaction is only credited to a digital campaign if the product scan occurred **within exactly 14 days** of the message interaction.
 
-### 7.Analog Surveillance Terminal UI
+### 7. Analog Surveillance Terminal UI
 We actively rejected the "generic AI dashboard slop" aesthetic. The frontend is a bespoke **"Agricultural Data-Punk"** interface resembling an analog Syngenta control terminal—featuring CRT phosphor-orange data streams, chalk-white monospace metrics, and strict neobrutalist grid architecture.
 
 ---
 
-##  Tech Stack
+## Tech Stack
 
 *   **Backend:** Python 3.10+, FastAPI, Uvicorn
 *   **Machine Learning:** Scikit-Learn (`HistGradientBoostingClassifier`), Pandas, NumPy
@@ -65,7 +65,7 @@ We actively rejected the "generic AI dashboard slop" aesthetic. The frontend is 
 
 ---
 
-##  How to Run Locally
+## How to Run Locally
 
 ### Prerequisites
 1. Python 3.9 or higher.
@@ -73,37 +73,76 @@ We actively rejected the "generic AI dashboard slop" aesthetic. The frontend is 
 
 ### Installation
 
-1. **Clone the repository and install dependencies:**
+1. **Clone the repository:**
+   ```bash
+   git clone <your-repository-url>
+   cd <repository-folder>
+   ```
+
+2. **Download and place the dataset:**
+
+   Download the hackathon dataset ZIP file and extract it.
+
+   After extraction, you should get a folder named:
+
+   ```bash
+   Syngenta_IITM_Hackathon_2026_dataset
+   ```
+
+   Place this folder in the project root directory alongside:
+
+   ```bash
+   prototype/
+   README.md
+   .gitignore
+   ```
+
+   Final project structure:
+
+   ```bash
+   project-root/
+   ├── prototype/
+   ├── Syngenta_IITM_Hackathon_2026_dataset/
+   ├── README.md
+   └── .gitignore
+   ```
+
+3. **Install dependencies:**
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Set your API Key:**
-   Export your Gemini API key to your environment variables. 
+4. **Set your API Key:**
+   Export your Gemini API key to your environment variables.
+
    *(Note: If the key is missing, the backend will gracefully fall back to hardcoded template responses so the application won't crash).*
+
    ```bash
    export GEMINI_API_KEY="your_api_key_here"
    ```
 
-3. **Start the Uvicorn Server:**
+5. **Start the Uvicorn Server:**
    Navigate to the `prototype` directory and start the FastAPI application:
+
    ```bash
    python3 -m uvicorn backend.app:app --host 0.0.0.0 --port 8000 --reload
    ```
 
-4. **Access the Terminal:**
+6. **Access the Terminal:**
    Open your browser and navigate to:
-   `http://localhost:8000`
 
-# NOTE:-  unzip the dataset and then add the dataset folder in root dir
+   ```bash
+   http://localhost:8000
+   ```
 
 ---
 
-##  Future Roadmap
+## Future Roadmap
 
 1. **Cloud Deployment:** Containerize the API with Docker for GCP/AWS deployment.
 2. **Supply Chain Auto-Routing:** If a product is out of stock at a grower's local retailer, dynamically adjust the campaign to recommend the next closest retail node holding inventory.
-3. **True Multimodality:** Connect the Visual Prompts directly to the Imagen 3 API to render the generated creatives directly in the UI. 
+3. **True Multimodality:** Connect the Visual Prompts directly to the Imagen 3 API to render the generated creatives directly in the UI.
 
 ---
+
 *Built for Track: AI-Powered Agricultural Marketing at Scale*
