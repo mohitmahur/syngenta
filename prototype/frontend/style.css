@@ -1,0 +1,790 @@
+/* ══════════════════════════════════════════════════════
+   KrishiConnect AI — Analog Surveillance Terminal
+   Aesthetic: Agricultural Data-Punk / Retro-Futuristic Terminal
+   ══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Oswald:wght@400;500;700&display=swap');
+
+:root {
+    /* Color Palette — Mud, Rust, Phosphor Orange, Chalk, Toxic Green */
+    --bg-base: #110E0C;
+    /* Deep void brown/black */
+    --bg-panel: #1A1512;
+    /* Muddy console casing */
+    --bg-highlight: #2A1F18;
+    /* Slightly warmed mud */
+
+    --text-chalk: #E8DECC;
+    /* Off-white chalk/paper */
+    --text-dim: #8C7B6B;
+    /* Faded ink */
+    --text-dark: #110E0C;
+    /* Inverted text */
+
+    --phosphor-orange: #FF5E00;
+    /* CRT Phosphor Orange */
+    --phosphor-orange-dim: rgba(255, 94, 0, 0.15);
+
+    --toxic-green: #00FF41;
+    /* Synthetic threat alert */
+    --toxic-green-dim: rgba(0, 255, 65, 0.15);
+
+    --sky-blue: #00E5FF;
+    /* Weather/Water data */
+
+    --grid-line: #3A2E25;
+    /* Separation lines */
+
+    --font-display: 'Oswald', sans-serif;
+    --font-data: 'IBM Plex Mono', monospace;
+
+    --transition-fast: 0.1s linear;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ─── CRT Noise Background & Global ─── */
+body {
+    font-family: var(--font-data);
+    background-color: var(--bg-base);
+    color: var(--text-chalk);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    position: relative;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+}
+
+/* Subtle static noise overlay */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-base);
+    border-left: 1px solid var(--grid-line);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--phosphor-orange);
+}
+
+/* ─── Layout: Terminal Grid ─── */
+.terminal-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    grid-template-rows: 60px 1fr;
+    min-height: 100vh;
+    border: 1px solid var(--grid-line);
+}
+
+/* ─── Header: Top Banner ─── */
+.top-banner {
+    grid-column: 1 / 3;
+    grid-row: 1 / 2;
+    border-bottom: 1px solid var(--grid-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--phosphor-orange);
+    color: var(--text-dark);
+    padding: 0 24px;
+}
+
+.banner-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.banner-meta {
+    font-family: var(--font-data);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    gap: 32px;
+}
+
+.blinking-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: var(--text-dark);
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
+}
+
+/* ─── Left Panel: Navigation Console ─── */
+.nav-console {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    border-right: 1px solid var(--grid-line);
+    background: var(--bg-panel);
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-console-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--grid-line);
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+}
+
+.nav-tab {
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--grid-line);
+    color: var(--text-chalk);
+    padding: 20px;
+    font-family: var(--font-data);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    text-transform: uppercase;
+    position: relative;
+}
+
+.nav-tab:hover {
+    background: var(--bg-highlight);
+    color: var(--phosphor-orange);
+}
+
+.nav-tab.active {
+    background: var(--phosphor-orange);
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.nav-tab.active::before {
+    content: '►';
+    position: absolute;
+    left: 8px;
+    animation: blink 1s step-end infinite;
+}
+
+/* ─── Main Viewport ─── */
+.main-viewport {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    background: var(--bg-base);
+    position: relative;
+    overflow-y: auto;
+}
+
+.tab-panel {
+    display: none;
+    padding: 40px;
+}
+
+.tab-panel.active {
+    display: block;
+    animation: scanReveal 0.3s ease-out forwards;
+}
+
+@keyframes scanReveal {
+    from {
+        opacity: 0;
+        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+    }
+
+    to {
+        opacity: 1;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+}
+
+/* ─── Section Header (Data Readout Style) ─── */
+.readout-header {
+    border-bottom: 2px solid var(--phosphor-orange);
+    padding-bottom: 12px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.readout-header h2 {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 0.9;
+    color: var(--text-chalk);
+    text-shadow: 2px 2px 0px var(--phosphor-orange);
+}
+
+.readout-id {
+    font-family: var(--font-data);
+    color: var(--phosphor-orange);
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+
+/* ─── Metric Blocks ─── */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1px;
+    /* 1px gap for grid lines */
+    background: var(--grid-line);
+    border: 1px solid var(--grid-line);
+    margin-bottom: 40px;
+}
+
+.metric-card {
+    background: var(--bg-panel);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-card:hover {
+    background: var(--bg-highlight);
+}
+
+.metric-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+}
+
+.metric-value {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--text-chalk);
+    margin-bottom: 8px;
+}
+
+.metric-detail {
+    font-size: 11px;
+    color: var(--phosphor-orange);
+    background: var(--phosphor-orange-dim);
+    padding: 4px 8px;
+    display: inline-block;
+    align-self: flex-start;
+}
+
+/* Color Overrides for Metrics */
+.metric-value.green,
+.green {
+    color: var(--toxic-green);
+}
+
+.metric-value.amber,
+.amber {
+    color: var(--phosphor-orange);
+}
+
+.metric-value.blue,
+.blue {
+    color: var(--sky-blue);
+}
+
+.metric-value.purple,
+.purple {
+    color: #DDA0DD;
+}
+
+.metric-value.red,
+.red {
+    color: #FF003C;
+}
+
+/* ─── Control Filters (Hardware Dials) ─── */
+.filter-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 40px;
+    padding: 24px;
+    border: 1px solid var(--grid-line);
+    background: var(--bg-highlight);
+    align-items: center;
+}
+
+.filter-select,
+.filter-input {
+    background: var(--bg-base);
+    border: 1px solid var(--phosphor-orange);
+    color: var(--phosphor-orange);
+    padding: 12px 16px;
+    font-family: var(--font-data);
+    font-size: 13px;
+    text-transform: uppercase;
+    outline: none;
+    border-radius: 0;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+    background: var(--phosphor-orange);
+    color: var(--text-dark);
+}
+
+.filter-input {
+    min-width: 320px;
+}
+
+/* ─── Buttons (Switches) ─── */
+.btn {
+    padding: 12px 32px;
+    background: transparent;
+    border: 1px solid var(--phosphor-orange);
+    color: var(--phosphor-orange);
+    font-family: var(--font-data);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--phosphor-orange);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.2s ease;
+    z-index: -1;
+}
+
+.btn:hover {
+    color: var(--text-dark);
+}
+
+.btn:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* ─── Data Tables (Ledger style) ─── */
+.table-wrapper {
+    border: 1px solid var(--grid-line);
+    background: var(--bg-panel);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    background: var(--bg-highlight);
+    color: var(--phosphor-orange);
+    padding: 16px;
+    text-align: left;
+    font-size: 11px;
+    border-bottom: 1px solid var(--grid-line);
+}
+
+.data-table td {
+    padding: 16px;
+    border-bottom: 1px dotted var(--grid-line);
+    color: var(--text-chalk);
+    vertical-align: top;
+}
+
+.data-table tbody tr:hover {
+    background: var(--phosphor-orange-dim);
+}
+
+/* ─── Cards / Blocks (Analog Panels) ─── */
+.card-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.card {
+    border: 1px solid var(--grid-line);
+    background: var(--bg-panel);
+    padding: 32px;
+    position: relative;
+}
+
+.card::before {
+    content: '///';
+    position: absolute;
+    top: -10px;
+    left: 24px;
+    background: var(--bg-base);
+    padding: 0 8px;
+    color: var(--phosphor-orange);
+    font-size: 10px;
+}
+
+.card h3 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    color: var(--text-chalk);
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--grid-line);
+    padding-bottom: 12px;
+}
+
+/* ─── Tags (Status Indicators) ─── */
+.tag {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 11px;
+    background: transparent;
+    border: 1px solid currentColor;
+}
+
+.tag-green {
+    color: var(--toxic-green);
+}
+
+.tag-amber {
+    color: var(--phosphor-orange);
+}
+
+.tag-blue {
+    color: var(--sky-blue);
+}
+
+.tag-red {
+    color: #FF003C;
+}
+
+.tag-purple {
+    color: #DDA0DD;
+}
+
+/* ─── Bar Charts (Data Streams) ─── */
+.chart-area {
+    min-height: 200px;
+}
+
+.bar-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.bar-label {
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-dim);
+}
+
+.bar-track {
+    height: 16px;
+    background: var(--bg-highlight);
+    border: 1px solid var(--grid-line);
+    position: relative;
+}
+
+.bar-fill {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 10px;
+    color: var(--bg-base);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: visible;
+}
+
+.bar-fill.green {
+    background: var(--toxic-green);
+}
+
+.bar-fill.blue {
+    background: var(--sky-blue);
+}
+
+.bar-fill.amber {
+    background: var(--phosphor-orange);
+}
+
+.bar-fill.purple {
+    background: #DDA0DD;
+}
+
+.bar-fill.teal {
+    background: var(--sky-blue);
+}
+
+.bar-fill.red {
+    background: #FF003C;
+}
+
+/* ─── Content Generation Engine Blocks ─── */
+.content-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1px;
+    background: var(--grid-line);
+    border: 1px solid var(--grid-line);
+    margin-bottom: 32px;
+}
+
+.content-meta-item {
+    background: var(--bg-panel);
+    padding: 16px;
+}
+
+.content-meta-item .label {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.content-outputs {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.content-block {
+    border: 1px solid var(--grid-line);
+    padding: 24px;
+    background: var(--bg-base);
+    position: relative;
+}
+
+.content-block-label {
+    position: absolute;
+    top: -10px;
+    left: 16px;
+    background: var(--bg-base);
+    padding: 0 8px;
+    color: var(--toxic-green);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.content-block-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-chalk);
+    text-transform: none;
+    /* Keep generated text readable */
+    font-family: var(--font-data);
+}
+
+.content-block.sms .content-block-label {
+    color: var(--sky-blue);
+}
+
+.content-block.voice .content-block-label {
+    color: #DDA0DD;
+}
+
+/* ─── KV List ─── */
+.kv-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.kv-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px dotted var(--grid-line);
+}
+
+.kv-item:last-child {
+    border-bottom: none;
+}
+
+.kv-key {
+    color: var(--text-dim);
+}
+
+.kv-value {
+    color: var(--text-chalk);
+    font-weight: 700;
+}
+
+/* ─── Funnel Chart ─── */
+.funnel-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.funnel-step {
+    display: grid;
+    grid-template-columns: 100px 1fr 60px;
+    gap: 16px;
+    align-items: center;
+}
+
+.funnel-label {
+    color: var(--text-dim);
+}
+
+.funnel-bar {
+    height: 24px;
+    background: var(--phosphor-orange);
+    color: var(--bg-base);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.funnel-rate {
+    color: var(--phosphor-orange);
+    text-align: right;
+}
+
+/* ─── Model Predictions ─── */
+.prediction-result {
+    display: flex;
+    gap: 1px;
+    background: var(--grid-line);
+    border: 1px solid var(--grid-line);
+}
+
+.pred-gauge {
+    flex: 1;
+    background: var(--bg-panel);
+    padding: 40px 24px;
+    text-align: center;
+}
+
+.pred-gauge .gauge-value {
+    font-family: var(--font-display);
+    font-size: 72px;
+    line-height: 1;
+    margin-bottom: 16px;
+}
+
+.pred-gauge .gauge-label {
+    color: var(--text-dim);
+    font-size: 11px;
+}
+
+/* ─── Model Info & Feature Importance ─── */
+.model-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--grid-line);
+    border: 1px solid var(--grid-line);
+    margin-bottom: 32px;
+}
+
+.model-metric {
+    background: var(--bg-panel);
+    padding: 24px;
+    text-align: center;
+}
+
+.model-metric .value {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 400;
+    margin-bottom: 8px;
+    color: var(--toxic-green);
+}
+
+.model-metric .label {
+    font-family: var(--font-data);
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.feature-importance {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.fi-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 60px;
+    align-items: center;
+    gap: 16px;
+}
+
+.fi-name {
+    font-family: var(--font-data);
+    font-size: 11px;
+    color: var(--text-dim);
+}
+
+.fi-bar-track {
+    height: 18px;
+    background: var(--bg-highlight);
+    border: 1px solid var(--grid-line);
+    overflow: hidden;
+}
+
+.fi-bar-fill {
+    height: 100%;
+    background: var(--phosphor-orange);
+    transition: width 1s ease;
+}
+
+.fi-value {
+    font-family: var(--font-data);
+    font-size: 11px;
+    color: var(--text-dim);
+    text-align: right;
+}
+
+/* ─── Loading ─── */
+.loading-spinner {
+    padding: 40px;
+    color: var(--phosphor-orange);
+    text-align: center;
+    animation: blink 1s step-end infinite;
+}
+
+.loading-spinner::before {
+    content: 'PROCESSING... ';
+}

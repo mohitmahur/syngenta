@@ -1,0 +1,28 @@
+# Core dataset (Do not push raw hackathon dataset)
+Syngenta_IITM_Hackathon_2026_dataset/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs & System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Large models or output logs
+prototype/models/*.pkl
+prototype/models/*.joblib
+prototype/data/*.csv
+*.log

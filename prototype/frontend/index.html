@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYS.TERMINAL // KrishiConnect</title>
+    <meta name="description" content="Analog Surveillance Terminal - KrishiConnect AI">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="terminal-layout">
+
+        <!-- ─── Top Banner ─── -->
+        <header class="top-banner">
+            <div class="banner-title">KRISHICONNECT // SYS.OP</div>
+            <div class="banner-meta">
+                <span id="status-text"><span class="blinking-dot" id="status-dot"></span>SYS.BOOT SEQUENCE</span>
+                <span>DATA.STREAM: ACTIVE</span>
+                <span>SECURE.PROTOCOL</span>
+            </div>
+        </header>
+
+        <!-- ─── Left Panel Console ─── -->
+        <aside class="nav-console">
+            <div class="nav-console-header">
+                TERMINAL.OP_MODES
+            </div>
+
+            <button class="nav-tab active" data-tab="dashboard" id="tab-dashboard">
+                [01] GLOBAL_TELEMETRY
+            </button>
+            <button class="nav-tab" data-tab="segments" id="tab-segments">
+                [02] TARGET_CLUSTERS
+            </button>
+            <button class="nav-tab" data-tab="grower" id="tab-grower">
+                [03] GROWER_SURVEILLANCE
+            </button>
+            <button class="nav-tab" data-tab="content" id="tab-content">
+                [04] SIGNAL_GENERATION
+            </button>
+            <button class="nav-tab" data-tab="analytics" id="tab-analytics">
+                [05] CONVERSION_LEDGER
+            </button>
+            <button class="nav-tab" data-tab="model" id="tab-model">
+                [06] ML_INFERENCE
+            </button>
+        </aside>
+
+        <!-- ─── Main Viewport ─── -->
+        <main class="main-viewport">
+
+            <!-- ─── [01] GLOBAL_TELEMETRY ─── -->
+            <section class="tab-panel active" id="panel-dashboard">
+                <div class="readout-header">
+                    <h2>GLOBAL TELEMETRY</h2>
+                    <span class="readout-id">OP.MODE // 01</span>
+                </div>
+
+                <div class="metrics-grid" id="overview-metrics">
+                    <!-- Filled by JS -->
+                </div>
+
+                <div class="card-grid-2">
+                    <div class="card">
+                        <h3>CROP_DISTRIBUTION.DAT</h3>
+                        <div class="chart-area" id="crop-distribution"></div>
+                    </div>
+                    <div class="card">
+                        <h3>CHANNEL_UTILIZATION.DAT</h3>
+                        <div class="chart-area" id="channel-distribution"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>GEOGRAPHIC_DISPERSION.MAP</h3>
+                    <div class="chart-area" id="state-distribution"></div>
+                </div>
+            </section>
+
+            <!-- ─── [02] TARGET_CLUSTERS ─── -->
+            <section class="tab-panel" id="panel-segments">
+                <div class="readout-header">
+                    <h2>TARGET CLUSTERS</h2>
+                    <span class="readout-id">OP.MODE // 02</span>
+                </div>
+
+                <div class="filter-bar">
+                    <select id="seg-filter-crop" class="filter-select">
+                        <option value="">[ PARAM: ALL CROPS ]</option>
+                    </select>
+                    <select id="seg-filter-state" class="filter-select">
+                        <option value="">[ PARAM: ALL STATES ]</option>
+                    </select>
+                    <button class="btn btn-primary" id="seg-load-btn">EXECUTE.FILTER</button>
+                </div>
+
+                <div class="metrics-grid" id="segment-summary-metrics"></div>
+
+                <div class="table-wrapper">
+                    <table class="data-table" id="segments-table">
+                        <thead>
+                            <tr>
+                                <th>CLUSTER.ID</th>
+                                <th>CROP</th>
+                                <th>STAGE</th>
+                                <th>STATE</th>
+                                <th>LANG</th>
+                                <th>DEV</th>
+                                <th>POPULATION</th>
+                                <th>AVG.ACRES</th>
+                                <th>THREAT.VEC</th>
+                                <th>PAYLOAD</th>
+                            </tr>
+                        </thead>
+                        <tbody id="segments-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ─── [03] GROWER_SURVEILLANCE ─── -->
+            <section class="tab-panel" id="panel-grower">
+                <div class="readout-header">
+                    <h2>GROWER SURVEILLANCE</h2>
+                    <span class="readout-id">OP.MODE // 03</span>
+                </div>
+
+                <div class="filter-bar">
+                    <input type="text" id="grower-id-input" class="filter-input"
+                        placeholder="INPUT.TARGET_ID (e.g., GRW_00001)" value="GRW_00001">
+                    <button class="btn btn-primary" id="grower-load-btn">COMMENCE.SCAN</button>
+                </div>
+
+                <div class="card-grid-2" id="grower-profile-area" style="display:none;">
+                    <div class="card" id="grower-info-card">
+                        <h3>TARGET.DEMOGRAPHICS</h3>
+                        <div id="grower-info"></div>
+                    </div>
+                    <div class="card" id="grower-context-card">
+                        <h3>AGRONOMIC.STATUS</h3>
+                        <div id="grower-context"></div>
+                    </div>
+                    <div class="card" id="grower-products-card">
+                        <h3>LOCAL.SUPPLY_CHAIN</h3>
+                        <div id="grower-products"></div>
+                    </div>
+                    <div class="card" id="grower-engagement-card">
+                        <h3>HISTORIC.PINGS</h3>
+                        <div id="grower-engagement"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── [04] SIGNAL_GENERATION ─── -->
+            <section class="tab-panel" id="panel-content">
+                <div class="readout-header">
+                    <h2>SIGNAL GENERATION</h2>
+                    <span class="readout-id">OP.MODE // 04</span>
+                </div>
+
+                <div class="filter-bar">
+                    <input type="text" id="content-grower-input" class="filter-input" placeholder="INPUT.TARGET_ID"
+                        value="GRW_00042">
+                    <select id="content-format" class="filter-select">
+                        <option value="auto">MODE: AUTO</option>
+                        <option value="whatsapp">MODE: WHATSAPP</option>
+                        <option value="sms">MODE: SMS</option>
+                        <option value="voice_script">MODE: VOICE</option>
+                    </select>
+                    <button class="btn btn-primary" id="content-generate-btn">INITIATE.SYNTHESIS</button>
+                </div>
+
+                <div class="card" id="content-result-card" style="display:none;">
+                    <div class="content-header" id="content-meta"></div>
+                    <div class="content-outputs" id="content-outputs"></div>
+                </div>
+            </section>
+
+            <!-- ─── [05] CONVERSION_LEDGER ─── -->
+            <section class="tab-panel" id="panel-analytics">
+                <div class="readout-header">
+                    <h2>CONVERSION LEDGER</h2>
+                    <span class="readout-id">OP.MODE // 05</span>
+                </div>
+
+                <div class="card-grid-2">
+                    <div class="card">
+                        <h3>FUNNEL.WHATSAPP</h3>
+                        <div id="wa-funnel"></div>
+                    </div>
+                    <div class="card">
+                        <h3>ATTRIBUTION.TIGHT (14D)</h3>
+                        <div id="conversion-attribution"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>FUNNEL.DIGITAL</h3>
+                    <div id="digital-funnel"></div>
+                </div>
+
+                <div class="card-grid-2">
+                    <div class="card">
+                        <h3>SUPPLY.STATUS</h3>
+                        <div id="inventory-health"></div>
+                    </div>
+                    <div class="card">
+                        <h3>FIELD_OPS.LOG</h3>
+                        <div id="field-activity"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ─── [06] ML_INFERENCE ─── -->
+            <section class="tab-panel" id="panel-model">
+                <div class="readout-header">
+                    <h2>ML INFERENCE</h2>
+                    <span class="readout-id">OP.MODE // 06</span>
+                </div>
+
+                <div class="card" id="model-info-card">
+                    <div id="model-info">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+
+                <div class="card" id="model-predict-card">
+                    <h3>INFERENCE.TARGET</h3>
+                    <div class="filter-bar">
+                        <input type="text" id="model-grower-input" class="filter-input" placeholder="INPUT.TARGET_ID"
+                            value="GRW_00100">
+                        <button class="btn btn-primary" id="model-predict-btn">EXECUTE.INFERENCE</button>
+                    </div>
+                    <div id="model-prediction"></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>
