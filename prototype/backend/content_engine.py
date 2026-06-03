@@ -11,6 +11,10 @@ All context injected into prompts is REAL data from the datasets.
 import os
 from typing import Dict, Any, Optional
 
+from gtts import gTTS
+import base64
+import io
+
 # Try to import Gemini
 try:
     import google.generativeai as genai
@@ -56,7 +60,7 @@ TEMPLATES = {
     },
 }
 
-# Gemini system prompt
+
 SYSTEM_PROMPT = """You are an agricultural marketing content specialist for Syngenta India.
 You create hyper-personalized, culturally sensitive marketing messages for Indian farmers.
 
@@ -221,8 +225,22 @@ class ContentEngine:
         result["guardrail_check"] = orch.validate_content(
             result["content"], best_product
         )
+        
+        # ── Add Audio Synthesis (NEW CODE GOES HERE) ──
+        voice_script = result.get("content", {}).get("voice_script", "")
+        if not voice_script and "voice_call script" in result.get("content", {}):
+            voice_script = result["content"]["voice_call script"] # fallback key mapping
+            
+        if voice_script:
+            print("[ContentEngine] Synthesizing audio...")
+            result["content"]["voice_audio_base64"] = self._generate_audio(
+                voice_script, 
+                context_vars["language"]
+            )
 
         return result
+    
+        
 
     def _generate_with_gemini(self, ctx: Dict, format_type: str) -> Dict[str, str]:
         """Generate content using Gemini API."""
@@ -369,3 +387,29 @@ ENGLISH: <english translation>
             content = self.generate(ctx, format_type)
             results.append(content)
         return results
+    
+
+    def _generate_audio(self, text: str, language: str) -> str:
+        """Generate audio and return as base64 string for direct frontend playback."""
+        # Map your database languages to standard ISO language codes
+        lang_map = {
+            "hindi": "hi",
+            "gujarati": "gu",
+            "marathi": "mr",
+            "punjabi": "pa",
+            "tamil": "ta",
+            "telugu": "te",
+            "english": "en"
+        }
+        lang_code = lang_map.get(language.lower(), "hi") # Default to Hindi
+        
+        try:
+            tts = gTTS(text=text, lang=lang_code, slow=False)
+            fp = io.BytesIO()
+            tts.write_to_fp(fp)
+            fp.seek(0)
+            audio_b64 = base64.b64encode(fp.read()).decode("utf-8")
+            return f"data:audio/mp3;base64,{audio_b64}"
+        except Exception as e:
+            print(f"[ContentEngine] Audio generation failed: {e}")
+            return ""

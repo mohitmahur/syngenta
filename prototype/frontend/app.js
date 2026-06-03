@@ -84,7 +84,6 @@ function renderDashboard(d) {
     const states = d.states || [];
     if (states.length) {
         api('/api/segments/summary').then(s => {
-            // We'll use a simple count from the crop data approach
             $('state-distribution').innerHTML = '<div class="bar-chart">' + states.map(st =>
                 `<div class="bar-row"><div class="bar-label">${st}</div><div class="bar-track"><div class="bar-fill teal" style="width:${Math.random() * 60 + 20}%"></div></div></div>`
             ).join('') + '</div>';
@@ -183,7 +182,7 @@ $('content-generate-btn').addEventListener('click', async () => {
         const content = result.content || {};
         let html = '';
 
-        // Dynamic Triggers & Orchestration
+        // Dynamic Weather Triggers & Orchestration
         let orchHtml = '<div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">';
         orchHtml += `<div class="content-block"><div class="content-block-label">🌩️ Active Weather Triggers</div><div class="content-block-text" style="font-size:12px;">`;
         if (result.weather_triggers && result.weather_triggers.length > 0) {
@@ -214,12 +213,26 @@ $('content-generate-btn').addEventListener('click', async () => {
             html += `</div></div>`;
         }
 
-        // Text Content
+        // Output Delivery Blocks
         if (content.whatsapp) html += `<div class="content-block"><div class="content-block-label">📱 WhatsApp Message</div><div class="content-block-text">${content.whatsapp}</div></div>`;
         if (content.sms) html += `<div class="content-block sms"><div class="content-block-label">💬 SMS</div><div class="content-block-text">${content.sms}</div></div>`;
-        if (content.voice_script) html += `<div class="content-block voice"><div class="content-block-label">🎙️ Voice Call Script</div><div class="content-block-text">${content.voice_script}</div></div>`;
+        
+        if (content.voice_script) {
+            html += `<div class="content-block voice">
+                <div class="content-block-label">🎙️ Voice Call Script</div>
+                <div class="content-block-text">${content.voice_script}</div>`;
+        
+            if (content.voice_audio_base64) {
+                html += `<div style="margin-top: 12px;">
+                    <audio controls style="width: 100%; height: 35px; filter: invert(90%) sepia(20%) saturate(300%) hue-rotate(350deg);">
+                        <source src="${content.voice_audio_base64}" type="audio/mp3">
+                    </audio>
+                  </div>`;
+            }
+            html += `</div>`;
+        }
 
-        // Visual Concepts
+        // Visual Concepts & Video Layout
         if (content.visual_prompt) {
             html += `<div class="content-block"><div class="content-block-label">🎨 Visual Concept Prompt (For Image AI)</div><div class="content-block-text" style="font-family:monospace; font-size:11px; background:var(--bg-dark); padding:8px;">${content.visual_prompt}</div></div>`;
         }
@@ -231,6 +244,22 @@ $('content-generate-btn').addEventListener('click', async () => {
             html += `</div></div>`;
         }
 
+        // ─── Human-in-the-Loop (RLHF) Panel ───
+        if (html !== '') {
+            window.lastGeneratedPayload = content; 
+            
+            html += `
+            <div class="content-block" style="border: 1px dashed var(--border-color); margin-top: 25px; padding: 15px; background: rgba(0,0,0,0.2);">
+                <div class="content-block-label">👨‍⚖️ Human-in-the-Loop Evaluation (RLHF)</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Evaluate this AI generation for safety and tone before network dispatch.</div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="submitRLHF('${result.grower_id}', '${result.generation_method}', 'thumbs_up')" style="background: var(--toxic-green); color: black; border: none; padding: 8px 16px; cursor: pointer; font-weight: bold; border-radius: 2px;">👍 APPROVED</button>
+                    <button onclick="submitRLHF('${result.grower_id}', '${result.generation_method}', 'thumbs_down')" style="background: #ef4444; color: white; border: none; padding: 8px 16px; cursor: pointer; font-weight: bold; border-radius: 2px;">👎 HALLUCINATION / REJECT</button>
+                </div>
+                <div id="rlhf-status" style="margin-top: 10px; font-size: 12px; font-weight: bold;"></div>
+            </div>`;
+        }
+
         $('content-outputs').innerHTML = html || '<p>No content generated</p>';
     } catch (e) { $('content-meta').innerHTML = '<p style="color:var(--accent-red)">Error: ' + e.message + '</p>'; }
 });
@@ -239,7 +268,6 @@ $('content-generate-btn').addEventListener('click', async () => {
 document.querySelector('[data-tab="analytics"]').addEventListener('click', loadAnalytics);
 async function loadAnalytics() {
     try {
-        // WhatsApp funnel
         const wa = await api('/api/analytics/whatsapp');
         const maxWa = wa.total_messages;
         $('wa-funnel').innerHTML = `<div class="funnel-chart">
@@ -249,7 +277,6 @@ async function loadAnalytics() {
             <div class="funnel-step"><div class="funnel-label">Clicked</div><div class="funnel-bar" style="width:${(wa.clicked / maxWa) * 100}%;background:linear-gradient(90deg,#22c55e,#4ade80)">${fmt(wa.clicked)}</div><div class="funnel-rate">${pct(wa.click_rate)}</div></div>
         </div>`;
 
-        // Conversion
         const conv = await api('/api/analytics/conversion');
         $('conversion-attribution').innerHTML = kvList([
             { k: 'Total Messages', v: conv.total_messages },
@@ -262,7 +289,6 @@ async function loadAnalytics() {
                 `<div class="kv-item"><span class="kv-key">${crop}</span><span class="kv-value">${d.messages} msgs → ${d.scanned_after_click} scans (${pct(d.campaign_to_action_rate)})</span></div>`
             ).join('') + '</div>';
 
-        // Digital funnel
         const df = await api('/api/analytics/digital-funnel');
         $('digital-funnel').innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">' +
             Object.entries(df.campaigns).map(([id, c]) => `<div style="background:var(--bg-elevated);border-radius:var(--radius-md);padding:20px">
@@ -274,13 +300,11 @@ async function loadAnalytics() {
             ])}
             </div>`).join('') + '</div>';
 
-        // Inventory
         const inv = await api('/api/analytics/inventory');
         const skus = Object.entries(inv.by_sku).sort((a, b) => b[1].out_of_stock_rate - a[1].out_of_stock_rate);
         $('inventory-health').innerHTML = '<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Snapshot: ' + inv.snapshot_week + '</p>' +
             barChart(skus.map(([name, d]) => ({ label: name, value: d.out_of_stock_rate * 100, display: pct(d.out_of_stock_rate) + ' OOS' })), 100, ['red', 'amber', 'amber', 'amber', 'green', 'green']);
 
-        // Field Activity
         const fa = await api('/api/analytics/field-activity');
         $('field-activity').innerHTML = kvList([
             { k: 'Total Visits', v: fmt(fa.total_visits) },
@@ -298,6 +322,25 @@ async function loadModel() {
         const oi = info.open_feature_importance || {};
         const maxFI = Math.max(...Object.values(oi), 0.01);
 
+        // Clean label mapper to turn ugly database keys into professional titles
+        const featureLabels = {
+    "cohort_open_propensity": "Lookalike Cluster Open Rate",
+    "cohort_click_propensity": "Lookalike Cluster Click Rate",
+    "predicted_open_prob": "🎯 Engineered Open Propensity Signal",
+    "age_farm_ratio": "📊 Resource Allocation Density Index",
+    "days_since_sowing": "Days Since Crop Sowing",
+    "grower_farm_size": "Farm Size (Acres)",
+    "grower_age": "Grower Age",
+    "offline_attended": "Field Day Attendance",
+    "has_scanned": "Past QR Product Scans",
+    "device_enc": "Hardware Device Profile",
+    "language_enc": "Regional Language Profile",
+    "product_enc": "Target Chemical Profile",
+    "msg_month": "Seasonal Month Signal",
+    "msg_day_of_week": "Day of Week Signal",
+    "gender_enc": "Demographic Gender Profile"
+};
+
         $('model-info').innerHTML = `
             <div class="model-metrics">
                 <div class="model-metric"><div class="value green">${info.open_model_auc_cv5}</div><div class="label">Open Model AUC (5-fold CV)</div></div>
@@ -306,9 +349,10 @@ async function loadModel() {
                 <div class="model-metric"><div class="value purple">${pct(info.open_rate_actual)}</div><div class="label">Actual Open Rate</div></div>
             </div>
             <h3>Feature Importance (Open Model)</h3>
-            <div class="feature-importance">${Object.entries(oi).sort((a, b) => b[1] - a[1]).map(([k, v]) =>
-            `<div class="fi-row"><div class="fi-name">${k}</div><div class="fi-bar-track"><div class="fi-bar-fill" style="width:${(v / maxFI) * 100}%"></div></div><div class="fi-value">${v.toFixed(3)}</div></div>`
-        ).join('')}</div>`;
+            <div class="feature-importance">${Object.entries(oi).sort((a, b) => b[1] - a[1]).map(([k, v]) => {
+                const cleanName = featureLabels[k] || k; // Fallback to key if label missing
+                return `<div class="fi-row"><div class="fi-name">${cleanName}</div><div class="fi-bar-track"><div class="fi-bar-fill" style="width:${(v / maxFI) * 100}%"></div></div><div class="fi-value">${v.toFixed(3)}</div></div>`;
+            }).join('')}</div>`;
     } catch (e) { $('model-info').innerHTML = '<p style="color:var(--accent-red)">Error loading model: ' + e.message + '</p>'; }
 }
 
@@ -325,6 +369,47 @@ $('model-predict-btn').addEventListener('click', async () => {
         </div>`;
     } catch (e) { $('model-prediction').innerHTML = '<p style="color:var(--accent-red)">' + e.message + '</p>'; }
 });
+
+// ─── RLHF Submission Handler ───
+async function submitRLHF(growerId, campaignId, status) {
+    const statusDiv = document.getElementById('rlhf-status');
+    statusDiv.style.color = 'var(--text-muted)';
+    statusDiv.innerText = "Submitting feedback to model logs...";
+    
+    let reason = "";
+    if (status === 'thumbs_down') {
+        reason = prompt("Why are you rejecting this? (e.g., Tone, Hallucination, Bad translation)");
+        if (reason === null) {
+            statusDiv.innerText = "";
+            return; 
+        }
+    }
+
+    try {
+        const response = await fetch('/api/rlhf/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                grower_id: growerId,
+                campaign_id: campaignId,
+                status: status,
+                failure_reason: reason,
+                payload_snapshot: window.lastGeneratedPayload || {}
+            })
+        });
+
+        if (response.ok) {
+            statusDiv.style.color = status === 'thumbs_up' ? 'var(--toxic-green)' : '#ef4444';
+            statusDiv.innerText = "✅ Feedback successfully written to RLHF tuning logs.";
+        } else {
+            statusDiv.style.color = '#ef4444';
+            statusDiv.innerText = "❌ Failed to log feedback.";
+        }
+    } catch (e) {
+        statusDiv.style.color = '#ef4444';
+        statusDiv.innerText = "❌ Error: " + e.message;
+    }
+}
 
 // ─── Init ───
 boot();

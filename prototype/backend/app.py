@@ -11,6 +11,11 @@ import sys
 from datetime import date
 from typing import Optional
 
+from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime
+import json
+
 from fastapi import FastAPI, Query, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
@@ -329,6 +334,42 @@ async def model_info():
     if not model.is_trained:
         model.train()
     return model.training_metrics
+
+# ── 1. Define the Schema ──
+class RLHFFeedback(BaseModel):
+    grower_id: str
+    campaign_id: str
+    status: str  # "thumbs_up" or "thumbs_down"
+    failure_reason: Optional[str] = None  # e.g., "Hallucinated Yield", "Tone Mismatch", "Safety Violation"
+    comments: Optional[str] = ""
+    payload_snapshot: dict  # The actual generated text that is being reviewed
+
+# ── 2. Create the Endpoint ──
+@app.post("/api/rlhf/feedback")
+async def log_rlhf_feedback(feedback: RLHFFeedback):
+    """
+    Logs human-in-the-loop feedback for continuous LLM prompt tuning.
+    Saves feedback directly to a local JSON Lines file.
+    """
+    log_entry = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "grower_id": feedback.grower_id,
+        "campaign_id": feedback.campaign_id,
+        "status": feedback.status,
+        "failure_reason": feedback.failure_reason,
+        "comments": feedback.comments,
+        "content_snapshot": feedback.payload_snapshot
+    }
+    
+    # Save to a local JSONL file for the hackathon demo
+    log_file = "rlhf_feedback_logs.jsonl"
+    try:
+        with open(log_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
+        print(f"[RLHF] Logged feedback for campaign {feedback.campaign_id}: {feedback.status}")
+        return {"status": "success", "message": "Feedback logged successfully."}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 # ──────────────────────────────────────────────────────
