@@ -58,7 +58,7 @@ _content = None
 _receptivity = None
 _analytics = None
 
-# --- Add to app.py near the top ---
+
 from pydantic import BaseModel
 from typing import List
 
@@ -72,7 +72,6 @@ class ReviewDecision(BaseModel):
     notes: str = ""
 
 
-# --- Add these endpoints to app.py ---
 @app.post("/api/campaign/queue")
 async def queue_flagged_campaign(campaign_data: dict):
     """Internal endpoint: Content engine pushes guardrail-failed content here."""
