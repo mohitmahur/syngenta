@@ -326,8 +326,8 @@ async function loadModel() {
         const featureLabels = {
     "cohort_open_propensity": "Lookalike Cluster Open Rate",
     "cohort_click_propensity": "Lookalike Cluster Click Rate",
-    "predicted_open_prob": "🎯 Engineered Open Propensity Signal",
-    "age_farm_ratio": "📊 Resource Allocation Density Index",
+    "predicted_open_prob": "Engineered Open Propensity Signal",
+    "age_farm_ratio": "Resource Allocation Density Index",
     "days_since_sowing": "Days Since Crop Sowing",
     "grower_farm_size": "Farm Size (Acres)",
     "grower_age": "Grower Age",
