@@ -333,7 +333,6 @@ async function loadModel() {
     "grower_age": "Grower Age",
     "offline_attended": "Field Day Attendance",
     "has_scanned": "Past QR Product Scans",
-    "device_enc": "Hardware Device Profile",
     "language_enc": "Regional Language Profile",
     "product_enc": "Target Chemical Profile",
     "msg_month": "Seasonal Month Signal",
