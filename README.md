@@ -128,6 +128,7 @@ We actively rejected the "generic AI dashboard slop" aesthetic. The frontend is 
    ```bash
    export GEMINI_API_KEY="your_api_key_here"
    ```
+   
 
 5. **Start the Uvicorn Server:**
    Navigate to the `prototype` directory and start the FastAPI application:
