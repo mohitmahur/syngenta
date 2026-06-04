@@ -126,7 +126,7 @@ We actively rejected the "generic AI dashboard slop" aesthetic. The frontend is 
    *(Note: If the key is missing, the backend will gracefully fall back to hardcoded template responses so the application won't crash).*
 
    ```bash
-   export GEMINI_API_KEY="your_api_key_heree"
+   export GEMINI_API_KEY="your_api_key_here"
    ```
    
 
