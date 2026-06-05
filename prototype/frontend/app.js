@@ -2,7 +2,7 @@
    KrishiConnect AI — Frontend Application
    ══════════════════════════════════════════════════════ */
 
-const API = '';
+const API = 'http://127.0.0.1:8000';
 
 // ─── Tab Navigation ───
 document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -216,12 +216,12 @@ $('content-generate-btn').addEventListener('click', async () => {
         // Output Delivery Blocks
         if (content.whatsapp) html += `<div class="content-block"><div class="content-block-label">📱 WhatsApp Message</div><div class="content-block-text">${content.whatsapp}</div></div>`;
         if (content.sms) html += `<div class="content-block sms"><div class="content-block-label">💬 SMS</div><div class="content-block-text">${content.sms}</div></div>`;
-        
+
         if (content.voice_script) {
             html += `<div class="content-block voice">
                 <div class="content-block-label">🎙️ Voice Call Script</div>
                 <div class="content-block-text">${content.voice_script}</div>`;
-        
+
             if (content.voice_audio_base64) {
                 html += `<div style="margin-top: 12px;">
                     <audio controls style="width: 100%; height: 35px; filter: invert(90%) sepia(20%) saturate(300%) hue-rotate(350deg);">
@@ -246,8 +246,8 @@ $('content-generate-btn').addEventListener('click', async () => {
 
         // ─── Human-in-the-Loop (RLHF) Panel ───
         if (html !== '') {
-            window.lastGeneratedPayload = content; 
-            
+            window.lastGeneratedPayload = content;
+
             html += `
             <div class="content-block" style="border: 1px dashed var(--border-color); margin-top: 25px; padding: 15px; background: rgba(0,0,0,0.2);">
                 <div class="content-block-label">👨‍⚖️ Human-in-the-Loop Evaluation (RLHF)</div>
@@ -324,21 +324,21 @@ async function loadModel() {
 
         // Clean label mapper to turn ugly database keys into professional titles
         const featureLabels = {
-    "cohort_open_propensity": "Lookalike Cluster Open Rate",
-    "cohort_click_propensity": "Lookalike Cluster Click Rate",
-    "predicted_open_prob": "Engineered Open Propensity Signal",
-    "age_farm_ratio": "Resource Allocation Density Index",
-    "days_since_sowing": "Days Since Crop Sowing",
-    "grower_farm_size": "Farm Size (Acres)",
-    "grower_age": "Grower Age",
-    "offline_attended": "Field Day Attendance",
-    "has_scanned": "Past QR Product Scans",
-    "language_enc": "Regional Language Profile",
-    "product_enc": "Target Chemical Profile",
-    "msg_month": "Seasonal Month Signal",
-    "msg_day_of_week": "Day of Week Signal",
-    "gender_enc": "Demographic Gender Profile"
-};
+            "cohort_open_propensity": "Lookalike Cluster Open Rate",
+            "cohort_click_propensity": "Lookalike Cluster Click Rate",
+            "predicted_open_prob": "Engineered Open Propensity Signal",
+            "age_farm_ratio": "Resource Allocation Density Index",
+            "days_since_sowing": "Days Since Crop Sowing",
+            "grower_farm_size": "Farm Size (Acres)",
+            "grower_age": "Grower Age",
+            "offline_attended": "Field Day Attendance",
+            "has_scanned": "Past QR Product Scans",
+            "language_enc": "Regional Language Profile",
+            "product_enc": "Target Chemical Profile",
+            "msg_month": "Seasonal Month Signal",
+            "msg_day_of_week": "Day of Week Signal",
+            "gender_enc": "Demographic Gender Profile"
+        };
 
         $('model-info').innerHTML = `
             <div class="model-metrics">
@@ -349,9 +349,9 @@ async function loadModel() {
             </div>
             <h3>Feature Importance (Open Model)</h3>
             <div class="feature-importance">${Object.entries(oi).sort((a, b) => b[1] - a[1]).map(([k, v]) => {
-                const cleanName = featureLabels[k] || k; // Fallback to key if label missing
-                return `<div class="fi-row"><div class="fi-name">${cleanName}</div><div class="fi-bar-track"><div class="fi-bar-fill" style="width:${(v / maxFI) * 100}%"></div></div><div class="fi-value">${v.toFixed(3)}</div></div>`;
-            }).join('')}</div>`;
+            const cleanName = featureLabels[k] || k; // Fallback to key if label missing
+            return `<div class="fi-row"><div class="fi-name">${cleanName}</div><div class="fi-bar-track"><div class="fi-bar-fill" style="width:${(v / maxFI) * 100}%"></div></div><div class="fi-value">${v.toFixed(3)}</div></div>`;
+        }).join('')}</div>`;
     } catch (e) { $('model-info').innerHTML = '<p style="color:var(--accent-red)">Error loading model: ' + e.message + '</p>'; }
 }
 
@@ -374,18 +374,18 @@ async function submitRLHF(growerId, campaignId, status) {
     const statusDiv = document.getElementById('rlhf-status');
     statusDiv.style.color = 'var(--text-muted)';
     statusDiv.innerText = "Submitting feedback to model logs...";
-    
+
     let reason = "";
     if (status === 'thumbs_down') {
         reason = prompt("Why are you rejecting this? (e.g., Tone, Hallucination, Bad translation)");
         if (reason === null) {
             statusDiv.innerText = "";
-            return; 
+            return;
         }
     }
 
     try {
-        const response = await fetch('/api/rlhf/feedback', {
+        const response = await fetch(API + '/api/rlhf/feedback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
