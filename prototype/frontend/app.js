@@ -2,7 +2,10 @@
    KrishiConnect AI — Frontend Application
    ══════════════════════════════════════════════════════ */
 
-const API = 'http://127.0.0.1:8000';
+const API =
+    window.location.hostname === 'localhost'
+        ? 'http://127.0.0.1:8000'
+        : 'https://your-backend.onrender.com';
 
 // ─── Tab Navigation ───
 document.querySelectorAll('.nav-tab').forEach(tab => {
