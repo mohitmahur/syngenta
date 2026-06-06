@@ -5,7 +5,7 @@
 const API =
     window.location.hostname === 'localhost'
         ? 'http://127.0.0.1:8000'
-        : 'https://your-backend.onrender.com';
+        : 'https://syngenta-a6jk.onrender.com';
 
 // ─── Tab Navigation ───
 document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -388,7 +388,7 @@ async function submitRLHF(growerId, campaignId, status) {
     }
 
     try {
-        const response = await fetch(API + '/api/rlhf/feedback', {
+        const response = await fetch(`${API}'/api/rlhf/feedback`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
